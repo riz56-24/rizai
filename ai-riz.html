@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riz AI - Galaxy Edition 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background: #0a0a1f;
+    position: relative;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.4), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 144, 255, 0.35), transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 20, 147, 0.15), transparent 60%),
+      #0a0a1f;
+    animation: nebulaShift 20s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  @keyframes nebulaShift {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(5deg); }
+  }
+
+  .stars-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  .chat-container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 520px;
+    height: 92vh;
+    background: rgba(20, 15, 45, 0.55);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 24px;
+    border: 1px solid rgba(138, 43, 226, 0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(138, 43, 226, 0.3);
+  }
+
+  .header {
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(25, 25, 112, 0.9), rgba(138, 43, 226, 0.8));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.4);
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, #8a2be2, #4b0082);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.8);
+    animation: pulseAvatar 3s ease-in-out infinite;
+  }
+
+  @keyframes pulseAvatar {
+    0%, 100% { box-shadow: 0 0 25px rgba(138, 43, 226, 0.8); }
+    50% { box-shadow: 0 0 40px rgba(79, 172, 254, 0.8); }
+  }
+
+  .header-info h1 { font-size: 18px; display: flex; align-items: center; gap: 8px; }
+  .header-info p { font-size: 12px; opacity: 0.9; }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #4facfe;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4facfe;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .chat-box {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(10, 10, 31, 0.3);
+  }
+
+  .chat-box::-webkit-scrollbar { width: 6px; }
+  .chat-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #8a2be2, #4facfe);
+    border-radius: 10px;
+  }
+
+  .message {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.9), rgba(138, 43, 226, 0.9));
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.5);
+  }
+
+  .bot {
+    align-self: flex-start;
+    background: rgba(20, 15, 45, 0.85);
+    color: #e0e7ff;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+  }
+
+  .message img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 8px;
+    cursor: pointer;
+    display: block;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+  }
+
+  .img-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+  .img-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #8a2be2, #4facfe);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .typing {
+    display: flex;
+    gap: 4px;
+    padding: 14px 18px;
+    background: rgba(20, 15, 45, 0.85);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+  }
+
+  .typing span {
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #8a2be2, #4facfe);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .input-area {
+    padding: 14px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(10, 10, 31, 0.6);
+    border-top: 1px solid rgba(138, 43, 226, 0.3);
+  }
+
+  .input-area input[type="text"] {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    outline: none;
+    border-radius: 25px;
+    background: rgba(20, 15, 45, 0.8);
+    color: #e0e7ff;
+    font-size: 14px;
+  }
+
+  .input-area input[type="text"]:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.2);
+  }
+
+  .input-area input::placeholder { color: #7c8db5; }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    border-radius: 50%;
+    background: rgba(20, 15, 45, 0.8);
+    color: #8a2be2;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon-btn:hover { border-color: #4facfe; color: #4facfe; }
+
+  .send-btn {
+    padding: 0 22px;
+    height: 44px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #8a2be2, #4facfe);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .preview-bar {
+    display: none;
+    padding: 10px 14px;
+    background: rgba(20, 15, 45, 0.8);
+    border-top: 1px solid rgba(138, 43, 226, 0.3);
+    align-items: center;
+    gap: 10px;
+  }
+
+  .preview-bar.active { display: flex; }
+
+  .preview-bar img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #4facfe;
+  }
+
+  .preview-bar span { font-size: 13px; color: #e0e7ff; flex: 1; }
+
+  .preview-bar button {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .badge-ai {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #8a2be2, #4facfe);
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #8a2be2, #ff1493);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .quick-chips {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(10, 10, 31, 0.3);
+  }
+
+  .quick-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 11px;
+    background: rgba(138, 43, 226, 0.2);
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    border-radius: 14px;
+    color: #c4b5fd;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    background: rgba(79, 172, 254, 0.3);
+    border-color: #4facfe;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-layer" id="starsLayer"></div>
+
+<div class="chat-container">
+  <div class="header">
+    <div class="avatar">R</div>
+    <div class="header-info">
+      <h1>Riz AI <span class="status-badge">2026</span></h1>
+      <p><span class="status-dot"></span> Online — Wawasan Terbaru 🌌</p>
+    </div>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    <div class="message bot">Halo! Saya <b>Riz AI</b> 🌌<br><br>Saya punya <b>wawasan terbaru 2026</b>! 🚀<br><br>Coba tanya:<br>• <i>"Tren AI terbaru 2026"</i><br>• <i>"Gemini 4 Argon"</i><br>• <i>"Teknologi emerging 2026"</i><br>• <i>"Buatkan gambar galaxy"</i><br>• 📎 <b>Upload foto</b> untuk dianalisis!</div>
+  </div>
+
+  <div class="quick-chips">
+    <div class="chip" onclick="quickAsk('Apa tren AI terbaru 2026?')">🔥 Tren AI</div>
+    <div class="chip" onclick="quickAsk('Jelaskan Gemini 4 Argon')">🧠 Gemini 4</div>
+    <div class="chip" onclick="quickAsk('Teknologi emerging 2026 apa saja?')">🚀 Emerging</div>
+    <div class="chip" onclick="quickAsk('Buatkan gambar galaxy nebula')">🎨 Gambar</div>
+    <div class="chip" onclick="quickAsk('Berita sains terbaru 2026')">🔬 Sains</div>
+  </div>
+
+  <div class="preview-bar" id="previewBar">
+    <img id="previewImg" src="" alt="preview">
+    <span id="previewName">foto.jpg</span>
+    <button id="cancelPreview">✕</button>
+  </div>
+
+  <div class="input-area">
+    <button class="icon-btn" id="attachBtn" title="Upload Foto">📎</button>
+    <input type="text" id="userInput" placeholder="Tanya apa saja..." autocomplete="off">
+    <button class="send-btn" id="sendBtn">Kirim</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" hidden>
+
+<script>
+// ==== BINTANG ====
+const starsLayer = document.getElementById('starsLayer');
+for (let i = 0; i < 100; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  const size = Math.random() * 2.5 + 0.5;
+  star.style.width = size + 'px';
+  star.style.height = size + 'px';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.top = Math.random() * 100 + '%';
+  star.style.animationDelay = Math.random() * 3 + 's';
+  starsLayer.appendChild(star);
+}
+
+// ==== ELEMEN ====
+const chatBox = document.getElementById('chatBox');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
+const previewBar = document.getElementById('previewBar');
+const previewImg = document.getElementById('previewImg');
+const previewName = document.getElementById('previewName');
+const cancelPreview = document.getElementById('cancelPreview');
+
+let pendingImage = null;
+
+// ==== WAWASAN 2026 (dipisah biar ringan) ====
+const WAWASAN = `WAWASAN TERBARU 2026:
+- Gemini 4 Argon (Google, 30 Sep 2026): AI terkuat Google, fokus keamanan siber & coding.
+- GPT-6.1 Sol (OpenAI): performa dekat Astra, 1/5 harga. Ada agen Dots 24/7.
+- DeepSeek V4: context 1M token, Pro 1.6T param, Flash 284B param.
+- Jam Atom Lutetium (Singapura): error <1 detik per 260 miliar tahun.
+- 10 Teknologi Emerging WEF 2026: everything-to-grid, lithium langsung, pendingin radiatif, PFAS, fermentasi presisi, exosome, vaksin mRNA personal, simulasi quantum, world models, kriptografi lattice.
+- Tren McKinsey: 37% organisasi lihat dampak EBIT, 93% overbudget AI, agentic AI jadi arah utama.`;
+
+const conversation = [
+  {
+    role: 'system',
+    content: `Kamu Riz AI, asisten ramah & pintar. Jawab singkat, jelas, bahasa sama seperti user.
+
+${WAWASAN}
+
+Jika user minta gambar, tambahkan [IMAGE: deskripsi bahasa Inggris] di akhir.
+Contoh: "Siap! [IMAGE: cute fluffy cat, high detail]"`
+  }
+];
+
+function addMessage(html, sender) {
+  const div = document.createElement('div');
+  div.classList.add('message', sender);
+  div.innerHTML = html;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.classList.add('message', 'bot', 'typing');
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return div;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function generateImageUrl(prompt) {
+  const seed = Math.floor(Math.random() * 999999);
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=true`;
+}
+
+function quickAsk(text) {
+  userInput.value = text;
+  sendMessage();
+}
+
+// ==== UPLOAD FOTO ====
+attachBtn.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Maksimal 5MB'); return; }
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    pendingImage = { dataUrl: ev.target.result, name: file.name };
+    previewImg.src = ev.target.result;
+    previewName.textContent = file.name;
+    previewBar.classList.add('active');
+  };
+  reader.readAsDataURL(file);
+  fileInput.value = '';
+});
+
+cancelPreview.addEventListener('click', () => {
+  pendingImage = null;
+  previewBar.classList.remove('active');
+});
+
+// ==== KIRIM ====
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text && !pendingImage) return;
+
+  if (pendingImage) {
+    const imgHtml = `<img src="${pendingImage.dataUrl}" onclick="openFullImage('${pendingImage.dataUrl}')">
+      ${text ? '<div style="margin-top:8px;">' + escapeHtml(text) + '</div>' : ''}`;
+    addMessage(imgHtml, 'user');
+
+    conversation.push({
+      role: 'user',
+      content: text ? `[Gambar: ${pendingImage.name}] ${text}` : `[Gambar: ${pendingImage.name}] Komentari gambar ini.`
+    });
+    pendingImage = null;
+    previewBar.classList.remove('active');
+    userInput.value = '';
+  } else {
+    addMessage(escapeHtml(text), 'user');
+    conversation.push({ role: 'user', content: text });
+    userInput.value = '';
+  }
+
+  sendBtn.disabled = true;
+  const typingEl = showTyping();
+
+  try {
+    const res = await fetch('https://text.pollinations.ai/openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'openai', messages: conversation })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+    let reply = data.choices?.[0]?.message?.content || 'Maaf, tidak bisa menjawab sekarang.';
+    conversation.push({ role: 'assistant', content: reply });
+    typingEl.remove();
+
+    const imgMatch = reply.match(/\[IMAGE:\s*(.+?)\]/i);
+
+    if (imgMatch) {
+      const prompt = imgMatch[1].trim();
+      const textPart = reply.replace(/\[IMAGE:\s*.+?\]/i, '').trim();
+      if (textPart) addMessage(textPart.replace(/\n/g, '<br>'), 'bot');
+
+      const loading = addMessage('<span class="badge-ai">🌌 MENGGAMBAR...</span><br>⏳ Tunggu...', 'bot');
+      const imgUrl = generateImageUrl(prompt);
+
+      const img = new Image();
+      img.onload = () => {
+        loading.innerHTML = `
+          <span class="badge-ai">🌌 GAMBAR RIZ AI</span><br>
+          <img src="${imgUrl}" onclick="openFullImage('${imgUrl}')">
+          <div class="img-actions">
+            <button onclick="openFullImage('${imgUrl}')">🔍 Lihat</button>
+            <button onclick="downloadImg('${imgUrl}')">⬇️ Download</button>
+            <button onclick="regenerate('${prompt.replace(/'/g, "\\'")}')">🔄 Ulang</button>
+          </div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      };
+      img.onerror = () => loading.innerHTML = '⚠️ Gagal membuat gambar.';
+      img.src = imgUrl;
+    } else {
+      addMessage(reply.replace(/\n/g, '<br>'), 'bot');
+    }
+  } catch (err) {
+    typingEl.remove();
+    console.error(err);
+    addMessage('⚠️ <b>Error:</b> ' + escapeHtml(err.message) + '<br>Coba lagi ya.', 'bot');
+  }
+
+  sendBtn.disabled = false;
+  userInput.focus();
+}
+
+function regenerate(prompt) {
+  const imgUrl = generateImageUrl(prompt);
+  const loading = addMessage('<span class="badge-ai">🌌 MENGGAMBAR ULANG...</span>', 'bot');
+  const img = new Image();
+  img.onload = () => {
+    loading.innerHTML = `
+      <span class="badge-ai">🌌 GAMBAR BARU</span><br>
+      <img src="${imgUrl}" onclick="openFullImage('${imgUrl}')">
+      <div class="img-actions">
+        <button onclick="openFullImage('${imgUrl}')">🔍 Lihat</button>
+        <button onclick="downloadImg('${imgUrl}')">⬇️ Download</button>
+      </div>`;
+  };
+  img.src = imgUrl;
+}
+
+function openFullImage(url) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(10,5,25,0.95);display:flex;justify-content:center;align-items:center;z-index:9999;padding:20px;cursor:zoom-out;';
+  const img = document.createElement('img');
+  img.src = url;
+  img.style.cssText = 'max-width:95%;max-height:90vh;border-radius:16px;border:2px solid #8a2be2;box-shadow:0 0 60px #8a2be2;';
+  modal.appendChild(img);
+  modal.onclick = () => modal.remove();
+  document.body.appendChild(modal);
+}
+
+async function downloadImg(url) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'riz-ai-' + Date.now() + '.jpg';
+    a.click();
+  } catch { window.open(url, '_blank'); }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+</script>
+
+</body>
+</html>
